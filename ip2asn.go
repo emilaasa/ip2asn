@@ -15,7 +15,7 @@ type db struct {
 	tree6 *string_tree.TreeV6
 }
 
-func NewLookuper(ipasndb io.Reader) *db {
+func NewLookuperFromFile(ipasndb io.Reader) *db {
 	s := &db{db: ipasndb,
 		tree4: string_tree.NewTreeV4(),
 		tree6: string_tree.NewTreeV6()}

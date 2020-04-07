@@ -8,7 +8,7 @@ import (
 func TestIPv4(t *testing.T) {
 	f, _ := os.Open("IPASN.DAT")
 
-	l := NewLookuper(f)
+	l := NewLookuperFromFile(f)
 	cases := []struct {
 		name string
 		in   string
