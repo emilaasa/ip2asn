@@ -3,41 +3,48 @@ package ip2asn
 import (
 	"bufio"
 	"github.com/kentik/patricia"
-	"github.com/kentik/patricia/string_tree"
+	"github.com/kentik/patricia/int_tree"
 	"io"
+	"log"
 	"net"
+	"strconv"
 	"strings"
 )
 
 type db struct {
 	db    io.Reader
-	tree4 *string_tree.TreeV4
-	tree6 *string_tree.TreeV6
+	tree4 *int_tree.TreeV4
+	tree6 *int_tree.TreeV6
 }
 
 func NewLookuperFromFile(ipasndb io.Reader) *db {
 	s := &db{db: ipasndb,
-		tree4: string_tree.NewTreeV4(),
-		tree6: string_tree.NewTreeV6()}
+		tree4: int_tree.NewTreeV4(),
+		tree6: int_tree.NewTreeV6()}
 
 	fs := bufio.NewScanner(s.db)
 	skipHeader(fs)
 	for fs.Scan() {
 		col := strings.Split(fs.Text(), "\t")
+		asn, err := strconv.Atoi(col[1])
+		if err != nil {
+			// TODO error reading dbfile?
+			log.Fatal(err)
+		}
 		ip, net, _ := net.ParseCIDR(col[0])
 		// ipv4 / v6 switch
 		if ip.To4() == nil {
 			_, ipv6, _ := patricia.ParseFromIPAddr(net)
-			s.tree6.Add(*ipv6, col[1], nil)
+			s.tree6.Add(*ipv6, asn, nil)
 			continue
 		}
 		ipv4, _, _ := patricia.ParseFromIPAddr(net)
-		s.tree4.Add(*ipv4, col[1], nil)
+		s.tree4.Add(*ipv4, asn, nil)
 	}
 	return s
 }
 
-func (s db) Lookup(cidr string) string {
+func (s db) Lookup(cidr string) int {
 	if isIPV6(cidr) {
 		_, ipv6, _ := patricia.ParseIPFromString(cidr)
 		_, asn, _ := s.tree6.FindDeepestTag(*ipv6)

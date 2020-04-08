@@ -12,27 +12,27 @@ func TestIPv4(t *testing.T) {
 	cases := []struct {
 		name string
 		in   string
-		want string
+		want int
 	}{
 		{
 			name: `simple ipv4`,
 			in:   "223.255.254.0/24",
-			want: "55415",
+			want: 55415,
 		},
 		{
 			name: `simple ipv6`,
 			in:   "2001:200:600::/40",
-			want: "7667",
+			want: 7667,
 		},
 		{
 			name: `full ipv6`,
 			in:   "2002:0000:0000:1234:0000:0000:0000:0000/64",
-			want: "1835",
+			want: 1835,
 		},
 		{
 			name: `longer match ipv6`,
 			in:   "2404:e200:1:1234:0000:0000:0000:0000/64",
-			want: "18353",
+			want: 18353,
 		},
 	}
 
