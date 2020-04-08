@@ -11,14 +11,14 @@ import (
 	"strings"
 )
 
-type db struct {
+type AsnDB struct {
 	db    io.Reader
 	tree4 *int_tree.TreeV4
 	tree6 *int_tree.TreeV6
 }
 
-func NewLookuperFromFile(ipasndb io.Reader) *db {
-	s := &db{db: ipasndb,
+func NewLookuperFromFile(ipasndb io.Reader) *AsnDB {
+	s := &AsnDB{db: ipasndb,
 		tree4: int_tree.NewTreeV4(),
 		tree6: int_tree.NewTreeV6()}
 
@@ -44,7 +44,7 @@ func NewLookuperFromFile(ipasndb io.Reader) *db {
 	return s
 }
 
-func (s db) Lookup(cidr string) int {
+func (s AsnDB) Lookup(cidr string) int {
 	if isIPV6(cidr) {
 		_, ipv6, _ := patricia.ParseIPFromString(cidr)
 		_, asn, _ := s.tree6.FindDeepestTag(*ipv6)
